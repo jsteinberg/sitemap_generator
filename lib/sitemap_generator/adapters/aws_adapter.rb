@@ -4,23 +4,29 @@ module SitemapGenerator
   class AwsAdapter
     # Call with a SitemapLocation and string data
     def write(location, raw_data)
-      # Check to see if s3.yml exists
-      begin
-        s3config = YAML::load(File.open("#{Rails.root}/config/s3.yml"))
-      rescue
-        e.message << " (s3.yml is missing)"
-        raise e
-      end
-      # Check to make sure keys are good.
-      begin
-        s3 = AWS::S3.new(
-        :access_key_id     => s3config[Rails.env.to_s]["access_key_id"],
-        :secret_access_key => s3config[Rails.env.to_s]["secret_access_key"]
-        )
-        bucket = s3.buckets[s3config[Rails.env.to_s]["bucket"]]
-      rescue
-        e.message << "Failed To Connct to S3"
-        raise e
+      # Check to see if AWS is already configured
+      if AWS.config.access_key_id.present?
+        s3 = AWS::S3.new
+        bucket = SitemapGenerator::Sitemap.aws_bucket
+      else
+        # Check to see if s3.yml exists
+        begin
+          s3config = YAML::load(File.open("#{Rails.root}/config/s3.yml"))
+        rescue
+          e.message << " (s3.yml is missing)"
+          raise e
+        end
+        # Check to make sure keys are good.
+        begin
+          s3 = AWS::S3.new(
+          :access_key_id     => s3config[Rails.env.to_s]["access_key_id"],
+          :secret_access_key => s3config[Rails.env.to_s]["secret_access_key"]
+          )
+          bucket = s3.buckets[s3config[Rails.env.to_s]["bucket"]]
+        rescue
+          e.message << "Failed To Connct to S3"
+          raise e
+        end
       end
 
       file = SitemapGenerator::FileAdapter.new.write(location, raw_data)

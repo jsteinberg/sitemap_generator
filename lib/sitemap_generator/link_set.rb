@@ -7,7 +7,7 @@ module SitemapGenerator
     @@requires_finalization_opts = [:filename, :sitemaps_path, :sitemaps_namer, :sitemaps_host]
     @@new_location_opts = [:filename, :sitemaps_path, :sitemaps_namer]
 
-    attr_reader :default_host, :sitemaps_path, :filename
+    attr_reader :default_host, :sitemaps_path, :filename, :aws_bucket
     attr_accessor :verbose, :yahoo_app_id, :include_root, :include_index, :sitemaps_host, :adapter, :yield_sitemap
 
     # Create a new sitemap index and sitemap files.  Pass a block calls to the following
