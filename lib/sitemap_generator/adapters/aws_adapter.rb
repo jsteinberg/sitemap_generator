@@ -7,7 +7,7 @@ module SitemapGenerator
       # Check to see if AWS is already configured
       if AWS.config.access_key_id.present?
         s3 = AWS::S3.new
-        bucket = SitemapGenerator::Sitemap.aws_bucket
+        bucket = s3.buckets[SitemapGenerator::Sitemap.aws_bucket]
       else
         # Check to see if s3.yml exists
         begin
